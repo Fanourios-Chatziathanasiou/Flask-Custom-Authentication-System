@@ -1,4 +1,4 @@
-# Custom-Authentication System
+# Custom Authentication System
 
 ---
 
