@@ -1,0 +1,20 @@
+create a .env file in the root directory and add the following variables
+
+
+APP_SALT='xxxxxxxxxxxxxxxxxxxxxxx'
+APP_SECRET_KEY="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+DATABASE_URI="postgresql://xxxusernamexxxxxx:xxxxpasswordxxxx@localhost:5432/Flask-API"
+HOST_URL="http://localhost:xxxxportnumberxxxxxx"
+REDIS_PORT=xxxx number type <----number for the port in redis databse (default is 6379) ex 
+REDIS_HOST=redis host in string format ex "localhost"
+REDIS_STORAGE_URI ="redis://localhost:xxxxREDIS_PORTxxxxx/xxxxdbnumberxxxxx"
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = "Strict"
+SESSION_COOKIE_PREFIX = "session"
+SESSION_COOKIE_ID_PREFIX = "s_id"
+CSRF_PREFIX = "csrf"
+SESSION_COOKIE_PATH = "/"
+SESSION_COOKIE_DOMAIN = "http://localhost:xxxxportnumberxxxxxx"
+SESSION_REFRESH_EACH_REQUEST = True
+SESSION_COOKIE_MAX_AGE = datetime.timedelta(days=365)
