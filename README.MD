@@ -83,10 +83,13 @@ Also dont forget to create a database in Postgres.The tables will be automatical
 </tbody>
 </table>
 3. install the required dependencies in your virtual environment (located in requirements.txt)
+
 ```bash
   pip install -r requirements.txt
 ```
+
 4. Run the __init__.py file located in the root folder of the project.
+
 ```bash
   python __init__.py
 ```
