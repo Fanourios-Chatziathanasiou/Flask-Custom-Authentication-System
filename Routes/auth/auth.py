@@ -19,21 +19,14 @@ from Routes.auth.auth_utils.auth_utils import (
 from Models import User
 
 
-load_dotenv(".env")
-APP_SALT = os.getenv("APP_SALT").encode("utf-8")
+load_dotenv('env')
+# make the rate limiter stored in redis db
 
 
 bp = Blueprint(
     "auth",
     __name__,
     url_prefix="/",
-)
-# make the rate limiter stored in redis db
-Extensions.auth_limiter = Limiter(
-    get_remote_address,
-    app=Extensions.app,
-    default_limits=["200 per day", "100 per hour"],
-    storage_uri=os.getenv("REDIS_STORAGE_URI"),
 )
 
 
@@ -46,6 +39,7 @@ def after_request(response):
 @bp.route("/", methods=["GET"])
 @require_login
 def index() -> Response | str:
+    
     if checkUserExistsInSessions(request=request):
         username = Extensions.redis_db.hget(
             f"{os.getenv('SESSION_COOKIE_PREFIX')}:{request.cookies.get('session')}",
@@ -53,11 +47,12 @@ def index() -> Response | str:
         )
         user: User = User.findUserWithUsernameOrEmail(usernameOrEmail=username)
         return f'Logged in !!! <a href="/logout">   Logout</a> <br> Username :{user.username} <br> Email : {user.email} <br> created_at = {user.created_at.strftime("%d/%m/%Y, %H:%M:%S")}'
+    
     return redirect(url_for("auth.login"))
 
 
 @bp.route("/login", methods=["GET", "POST"])
-@Extensions.auth_limiter.limit("100 per hour")
+@Extensions.auth_limiter.limit("25 per hour")
 def login() -> Response:
     messages = []
     if request.method == "POST":
@@ -129,30 +124,24 @@ def login() -> Response:
                 error=None,
                 context={"messages": messages},
             )
+            
         )
-        resp.headers["Content-Security-Policy"] = ";".join(
-            [
-                f"{key} {value}"
-                for key, value in Extensions.CONTENT_SECURITY_POLICY.items()
-            ]
-        )
-
+        
+    
         # store the csrf tokens in redis db
         Extensions.redis_db.set(
             f"{os.getenv('CSRF_PREFIX')}:{csrf_token}",
             csrf_token,
             ex=timedelta(minutes=5),
         )
-        return resp
+        return resp;
 
 
 @bp.route("/logout", methods=["GET"])
 def logout() -> Response:
     # clear the cookie session
     resp = make_response(redirect(url_for("auth.index")))
-    resp.headers["Content-Security-Policy"] = ";".join(
-        [f"{key} {value}" for key, value in Extensions.CONTENT_SECURITY_POLICY.items()]
-    )
+
 
     # check if there's a session cookie
     if os.getenv("SESSION_COOKIE_PREFIX") in request.cookies:
@@ -207,11 +196,11 @@ def register() -> Response:
             )
             return resp
 
-        # check if the username is already taken
+        
         if (
-            User.findUserWithUsernameOrEmail(username=sanitized_username) is not None
-            or User.findUserWithUsernameOrEmail(email=sanitized_email) is not None
-        ) is not None:
+            User.findUserWithUsernameOrEmail(usernameOrEmail=sanitized_username) is not None
+            or User.findUserWithUsernameOrEmail(usernameOrEmail=sanitized_email) is not None
+        ):
             messages.append("Username or email already taken!")
             resp = make_response(
                 render_template(
@@ -303,7 +292,7 @@ def register() -> Response:
         return resp
 
 
-@bp.errorhandler(404)
+@bp.app_errorhandler(404)
 def page_not_found(e) -> Response:
     # serve the static page for 404 errors.
-    return redirect(url_for("static", filename="404/404.html"))
+    return render_template("404/404.html")
