@@ -74,6 +74,7 @@ def check_password(passwordInput: str, passwordFormDB: str) -> bool:
     ).decode("utf-8")
     # convert bytes to string
     # check if password matches and return true or false
+
     return passwordInput_hashed == passwordFormDB
 
 
