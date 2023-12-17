@@ -38,13 +38,7 @@ def generate_AuthCookies(
             expires=datetime.datetime.now() + datetime.timedelta(days=365),
         )
 
-        # add CSP headers
-        resp.headers["Content-Security-Policy"] = ";".join(
-            [
-                f"{key} {value}"
-                for key, value in Extensions.CONTENT_SECURITY_POLICY.items()
-            ]
-        )
+        
     except Exception as e:
         print(e)
         return False
@@ -73,7 +67,7 @@ def storeSessionInRedis(session_key, s_id, **kwArgs) -> bool:
                 **kwArgs,
             },
         )
-        # set to the session a expiration time of 1 year
+        # set to the session an expiration time of 1 year
         Extensions.redis_db.expire(
             f"{os.getenv('SESSION_COOKIE_PREFIX')}:{session_key}",
             datetime.timedelta(days=365),

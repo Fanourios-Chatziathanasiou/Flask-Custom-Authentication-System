@@ -1,8 +1,11 @@
 from flask_sqlalchemy import SQLAlchemy
 import redis
-import os
 from dotenv import load_dotenv
 from flask import Flask
+import os
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
 
 
 load_dotenv(".env")
@@ -15,10 +18,8 @@ class Extensions:
     app: Flask | None = None
     db: SQLAlchemy | None = SQLAlchemy(app)
     redis_db: redis.Redis | None = None
-
-    CONTENT_SECURITY_POLICY = {
-        "default-src": "'self'",
-        "script-src": ["'self'", os.getenv("HOST_URL") + "/js/"],
-        "style-src": ["'self'", os.getenv("HOST_URL") + "/css/"],
-    }
-    auth_limiter = None
+    auth_limiter: Limiter = Limiter(
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri=f'{os.getenv("REDIS_STORAGE_URI")}',
+)

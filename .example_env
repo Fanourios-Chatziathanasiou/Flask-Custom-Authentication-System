@@ -1,4 +1,4 @@
-create a .env file in the root directory and add the following variableS
+create a .env file in the root directory and add the following variables
 APP_SALT='@@@@@@@@@@@@@@@@@@@@@@@'
 APP_SECRET_KEY="@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 DATABASE_URI="postgresql://@@@username@@@@@@:@@@@password@@@@@localhost:5432/@@@@@DATABASE-NAME@@@@"
